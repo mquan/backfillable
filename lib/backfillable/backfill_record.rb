@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-# may need to require active_record/base
+require 'active_record'
 
 module Backfillable
   class BackfillRecord < ActiveRecord::Base
-    self.data_backfills_table_name = 'data_backfills'
-
     class << self
       def primary_key
         "version"
@@ -13,7 +11,7 @@ module Backfillable
 
       def table_name
         # TODO: support customized backfills name
-        data_backfills_table_name
+        'data_backfills'
       end
 
       def create_table

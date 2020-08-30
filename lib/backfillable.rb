@@ -1,6 +1,7 @@
 require "backfillable/version"
+require "backfillable/backfill"
+require "backfillable/backfiller"
 
 module Backfillable
-  class Error < StandardError; end
-  # Your code goes here...
+
 end

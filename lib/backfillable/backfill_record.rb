@@ -21,6 +21,10 @@ module Backfillable
           connection.create_table(table_name, id: false) do |t|
             t.string :version, **version_options
           end
+
+          # Refresh class so that it awares of the new table and column
+          connection.schema_cache.clear!
+          reset_column_information
         end
       end
 

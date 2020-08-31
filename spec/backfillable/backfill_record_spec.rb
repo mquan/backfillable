@@ -19,7 +19,6 @@ RSpec.describe Backfillable::BackfillRecord do
     context "when table doesn't exist" do
       it 'creates table' do
         expect { described_class.create_table }.to change {
-          described_class.connection.schema_cache.clear!
           described_class.table_exists?
         }.from(false).to(true)
       end
@@ -30,11 +29,9 @@ RSpec.describe Backfillable::BackfillRecord do
 
       it 'does not create new table' do
         expect { described_class.create_table }.not_to change {
-          described_class.connection.schema_cache.clear!
           described_class.table_exists?
         }
 
-        described_class.connection.schema_cache.clear!
         expect(described_class.table_exists?).to be_truthy
       end
     end
@@ -59,7 +56,6 @@ RSpec.describe Backfillable::BackfillRecord do
           described_class.table_exists?
         }
 
-        described_class.connection.schema_cache.clear!
         expect(described_class.table_exists?).to be_falsey
       end
     end
@@ -83,9 +79,6 @@ RSpec.describe Backfillable::BackfillRecord do
     let(:backfill) { described_class.create!(version: '123456789') }
     before do
       described_class.create_table
-
-      # This reloads the class and re-initialize the columns as AR attrs.
-      described_class.reset_column_information
     end
 
     it 'returns the version as integer' do

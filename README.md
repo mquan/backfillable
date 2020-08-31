@@ -41,9 +41,9 @@ Or install it yourself as:
 
 Create a new backfill
 
-    $ rails generate backfill foo_bar_backfill
+    $ rails generate backfill foo_bar
 
-This creates a new ruby file in the specified backfills folder (`/backfills`):
+This creates a new file named `foo_bar_backfill.rb` in the specified backfills folder (`/backfills`):
 
 ```ruby
 class FooBarBackfill < Backfillable::Backfill
@@ -57,7 +57,9 @@ Run the backfill
 
     $ rake db:backfill
 
-## Best practice
+## Best practices
+
+DO NOT modify published backfills. If you need to make changes to an existing backfill, just remove the old one and add a new backfill. Your new backfill should take into account about the fact that the previously published backfill may already been run.
 
 Sometimes there are dependencies between backfills and db migrations. We want to write backfills such that they are not dependent on order of migrations. Consider the following scenario:
 

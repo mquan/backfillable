@@ -1,37 +1,49 @@
 # frozen_string_literal: true
 
-require 'backfill_record'
+require_relative './backfill_record'
+require_relative './configuration'
 
 module Backfillable
-  BackfillProxy = Struct.new(:name, :version, :filename, :scope) do
-    def initialize(name, version, filename, scope)
-      super
-      @backfill = nil
+  class << self
+    def config
+      @config ||= Configuration.new
     end
 
-    def basename
-      File.basename(filename)
-    end
-
-    delegate :perform, to: :backfill
-
-    private
-
-    def backfill
-      @backfill ||= load_backfill
-    end
-
-    def load_backfill
-      require(File.expand_path(filename))
-      name.constantize.new(name, version)
+    def configure
+      yield config
     end
   end
 
   class Backfiller
-    # TODO: make this configurable
-    self.backfills_paths = ['backfills']
+    BackfillProxy = Struct.new(:name, :version, :filename, :scope) do
+      def initialize(name, version, filename, scope)
+        super
+        @backfill = nil
+      end
+
+      def basename
+        File.basename(filename)
+      end
+
+      delegate :perform, to: :backfill
+
+      private
+
+      def backfill
+        @backfill ||= load_backfill
+      end
+
+      def load_backfill
+        require(File.expand_path(filename))
+        name.constantize.new
+      end
+    end
 
     BACKFILL_FILENAME_REGEX = /\A([0-9]+)_([_a-z0-9]*)\.?([_a-z0-9]*)?\.rb\z/
+
+    def self.backfills_paths
+      Backfillable.config.backfills_paths || ['backfills']
+    end
 
     def self.backfill!
       new.backfill!
@@ -48,13 +60,17 @@ module Backfillable
 
     private
 
+    def label_for(backfill)
+      "#{backfill.version} #{backfill.name}"
+    end
+
     def run(backfill)
-      puts "#{version} #{name} backfilling"
+      puts "#{label_for(backfill)} backfilling" if Backfillable.config.verbose
       ti = Time.now
       backfill.perform
       record_completed_backfill(backfill.version)
       tf = Time.now
-      puts "#{version} #{name} completed #{(tf - ti).round(1)}s"
+      puts "#{label_for(backfill)} completed #{(tf - ti).round(1)}s" if Backfillable.config.verbose
     end
 
     def record_completed_backfill(version)
@@ -62,7 +78,7 @@ module Backfillable
     end
 
     def backfill_files
-      paths = Array(backfills_paths)
+      paths = Array(self.class.backfills_paths)
       Dir[*paths.flat_map { |path| "#{path}/**/[0-9]*_*.rb" }]
     end
 
@@ -75,7 +91,7 @@ module Backfillable
         version, name, scope = parse_backfill_filename(filename)
         raise "Invalid backfill filename #{filename}" unless version
 
-        BackfillProxy.new(name.camelize, version.to_i, file, scope)
+        BackfillProxy.new(name.camelize, version.to_i, filename, scope)
       end
     end
 

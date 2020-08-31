@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "backfillable"
+require "backfillable/backfill_record"
 
 require "rails"
 require 'active_record'
@@ -17,7 +18,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    Backfillable::BackfillRecord.connection.schema_cache.clear!
+    Backfillable.config.verbose = false
   end
 
   config.after(:each) do

@@ -98,6 +98,9 @@ Backfillable.configure do |config|
 
   # Whether backfills log should be shown
   config.verbose = true
+
+  # If you'd like backfills to be run before migrations, set the following to true.
+  config.run_before_migration = false
 end
 ```
 

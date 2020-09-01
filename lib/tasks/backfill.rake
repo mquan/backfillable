@@ -5,4 +5,6 @@ namespace :db do
   task :backfill do
     Backfillable::Backfiller.backfill!
   end
+
+  Rake::Task['db'].enhance([:backfill]) if Backfillable.run_before_migration
 end

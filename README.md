@@ -59,9 +59,11 @@ Run the backfill
 
 ## Best practices
 
-DO NOT modify published backfills. If you need to make changes to an existing backfill, just remove the old one and add a new backfill. Your new backfill should take into account about the fact that the previously published backfill may already been run.
+This section highlights a few conventions that will help make your backfills management more seamless.
 
-Sometimes there are dependencies between backfills and db migrations. We want to write backfills such that they are not dependent on order of migrations. Consider the following scenario:
+- DO NOT modify published backfills. If you need to make changes to an existing backfill, just remove the old one and add a new backfill. Your new backfill should take into account about the fact that the previously published backfill may already been run.
+
+- Sometimes there are dependencies between backfills and db migrations. We want to write backfills such that they are not dependent on order of migrations. Consider the following scenario:
 
 1. Create table `foos`
 2. Add null constraint to column `bar` in table `foos`
@@ -105,6 +107,11 @@ end
 ```
 
 ## Development
+
+TODOs:
+
+- Add option to raise error when there are outstanding backfills
+- Add action button to run backfill on error page.
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 

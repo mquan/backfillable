@@ -2,10 +2,10 @@
 
 module Backfillable
   class Configuration
-    attr_accessor :backfills_paths, :backfills_table_name, :verbose
+    attr_accessor :backfills_path, :backfills_table_name, :verbose
 
     def initialize
-      @backfills_paths = nil
+      @backfills_path = nil
       @backfills_table_name = nil
       @verbose = true
     end

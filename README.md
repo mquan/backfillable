@@ -90,8 +90,13 @@ end
 
 ```ruby
 Backfillable.configure do |config|
-  config.backfills_paths = ['backfills']
+  # Where the backfill files are stored
+  config.backfills_path = 'backfills'
+
+  # Name of table tracking backfill status
   config.backfills_table_name = 'data_backfills'
+
+  # Whether backfills log should be shown
   config.verbose = true
 end
 ```

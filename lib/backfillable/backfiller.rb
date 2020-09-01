@@ -41,8 +41,8 @@ module Backfillable
 
     BACKFILL_FILENAME_REGEX = /\A([0-9]+)_([_a-z0-9]*)\.?([_a-z0-9]*)?\.rb\z/
 
-    def self.backfills_paths
-      Backfillable.config.backfills_paths || ['backfills']
+    def self.backfills_path
+      Backfillable.config.backfills_path || 'backfills'
     end
 
     def self.backfill!
@@ -78,7 +78,7 @@ module Backfillable
     end
 
     def backfill_files
-      paths = Array(self.class.backfills_paths)
+      paths = Array(self.class.backfills_path)
       Dir[*paths.flat_map { |path| "#{path}/**/[0-9]*_*.rb" }]
     end
 

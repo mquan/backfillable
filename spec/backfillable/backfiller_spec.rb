@@ -4,22 +4,22 @@ require 'spec_helper'
 require 'fixtures/mock_data'
 
 RSpec.describe Backfillable::Backfiller do
-  describe '.backfills_paths' do
-    subject { described_class.backfills_paths }
+  describe '.backfills_path' do
+    subject { described_class.backfills_path }
 
     context 'when path is not configured' do
-      it 'returns backfills paths' do
-        is_expected.to eq(['backfills'])
+      it 'returns backfills path' do
+        is_expected.to eq('backfills')
       end
     end
 
     context 'when path is configured' do
-      let(:paths) { ['dev_backfills', 'test_backfills'] }
-      before { Backfillable.config.backfills_paths = paths }
-      after {  Backfillable.config.backfills_paths = nil }
+      let(:path) { 'dev_backfills' }
+      before { Backfillable.config.backfills_path = path }
+      after {  Backfillable.config.backfills_path = nil }
 
       it 'returns configured path' do
-        is_expected.to eq(paths)
+        is_expected.to eq(path)
       end
     end
   end
@@ -33,11 +33,11 @@ RSpec.describe Backfillable::Backfiller do
     before do
       Backfillable::BackfillRecord.create_table
       MockData.reset
-      Backfillable.config.backfills_paths = ['spec/fixtures/test_backfills']
+      Backfillable.config.backfills_path = 'spec/fixtures/test_backfills'
     end
 
     after do
-      Backfillable.config.backfills_paths = nil
+      Backfillable.config.backfills_path = nil
     end
 
     context 'when all backfills have not been completed' do

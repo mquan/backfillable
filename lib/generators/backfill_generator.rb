@@ -8,7 +8,7 @@ module Rails
       desc "This generator creates a backfill file"
 
       def create_backfill_file
-        template 'backfill.rb', File.join(Backfiller.backfills_paths.first, "#{file_name}_backfill.rb")
+        template 'backfill.rb', File.join(Backfiller.backfills_path, "#{file_name}_backfill.rb")
       end
     end
   end

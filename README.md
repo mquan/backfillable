@@ -12,13 +12,13 @@ The solution is to backfill the data to prep for upcoming changes in both develo
 
 ## Solution
 
-**backfillable** solves this problem by emulating how rails manages db migrations. The three core ideas are:
+**backfillable** solves this problem by emulating how rails manages db migrations. The core principles that *backfillable* operates by are:
 
-1. **Backfills should be decoupled from migrations** - teams often resort to adding the backfill code as part of the migrations. However, backfill code tend to reference application code, which can easily become outdated/obsolete and cause error when running migrations. In the last example above, we don't even have a migration to latch on to run the backfill.
+1. **Backfills should be tracked and run similar to how rails migration works** - each backfill should be run only once. Developers should not need to know which ruby code or rake task to run in their development environment, just that they need to be reminded to run a generic rake task (`rake db:backfill`) when there are outstanding backfills
 
-2. **Backfills should be tracked and run similar to how rails migration works** - each backfill should be run and run only once. Developers do not need to be told which ruby code or rake task to run in their development environment, just that they need to be reminded to run a generic rake task (`rake db:backfill`) when there are outstanding backfills
+2. **Backfills should be decoupled from migrations** - both migrations and backfills have timestamp-based versions and should be run together in the order specified by their versions.
 
-3. **Backfills are not permanent** - unlike db migrations, backfills should be cleaned up once everyone has run them or when they are no longer relevant.
+3. **Backfills are not permanent** - unlike db migrations, backfills should be cleaned up once everyone has run them or when they are no longer relevant. Backfill code tend to reference application code, which can easily become outdated/obsolete and cause error when running along with migrations.
 
 
 ## Installation
@@ -57,7 +57,20 @@ Run the backfill
 
     $ rake db:backfill
 
+Intermingle migrations with backfills
+
+    $ rake db:migrate:with_backfills
+
+This will run migrations and backfills in the order that's specified by their version numbers
+
+
 ## Best practices
+
+The less your backfills depend on application code, the longer lived it is.
+
+```ruby
+ActiveRecord::Base.connection.execute('update users set is_admin = false where is_amin is NULL')
+```
 
 This section highlights a few conventions that will help make your backfills management more seamless.
 
@@ -100,18 +113,10 @@ Backfillable.configure do |config|
 
   # Whether backfills log should be shown
   config.verbose = true
-
-  # If you'd like backfills to be run before migrations, set the following to true.
-  config.run_before_migration = false
 end
 ```
 
 ## Development
-
-TODOs:
-
-- Add option to raise error when there are outstanding backfills
-- Add action button to run backfill on error page.
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
